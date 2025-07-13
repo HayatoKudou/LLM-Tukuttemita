@@ -3,7 +3,8 @@
 https://github.com/rasbt/LLMs-from-scratch/tree/main/setup/01_optional-python-setup-preferences
 
 
-## HandmadeTokenizer.py
+<details>
+<summary>HandmadeTokenizer.py</summary>
 
 **目的**: LLM用のテキストトークナイザーを自作し、テキストを機械学習で処理可能な数値形式に変換する
 
@@ -11,27 +12,27 @@ https://github.com/rasbt/LLMs-from-scratch/tree/main/setup/01_optional-python-se
 
 ### やっていること
 
-1. **学習元データの準備**
+**1. 学習元データの準備**
 - GitHubから短編小説「The Verdict」をダウンロード
 - ローカルファイルとして保存（the-verdict.txt）
 - 実際のテキスト例：'I HAD always thought Jack Gisburn rather a cheap genius...'
 
-2. **テキストのトークン化**
+**2. テキストのトークン化**
 - 正規表現を使ってテキストを単語や句読点に分割
 - 実例：'I HAD always thought Jack Gisburn rather a cheap genius--though a good fellow enough--so it was no g'
 - 結果：['I', 'HAD', 'always', 'thought', 'Jack', 'Gisburn', 'rather', 'a', 'cheap', 'genius', '--', 'though', ...]
 
-3. **語彙（辞書）の構築**
+**3. 語彙（辞書）の構築**
 - 全てのユニークなトークンを収集・整理（1132個）
 - アルファベット順にソート：['!', '"', "'", '(', ')', ',', '--', '.', ':', ';', ...]
 - 特殊トークンを追加：`<|endoftext|>`（文章の終端）、`<|unk|>`（未知の単語）
 
-4. **トークンIDの割り当て**
+**4. トークンIDの割り当て**
 - 各トークンに一意の数値IDを割り当て
 - 実例：'!' → 0, '"' → 1, "'" → 2, '(' → 3, ')' → 4, ',' → 5, ...
 - 語彙辞書の作成：{トークン: ID}の形式
 
-5. **エンコード・デコード機能の実装**
+**5. エンコード・デコード機能の実装**
 - **エンコード**: テキスト → トークンID列
 - **デコード**: トークンID列 → テキスト
 - 未知トークンの処理：語彙にない単語は`<|unk|>`に置換
@@ -100,8 +101,10 @@ graph LR
     style B4 fill:#374151,color:#ffffff
 ```
 
+</details>
 
-## BytePairEncorder.py
+<details>
+<summary>BytePairEncorder.py</summary>
 
 **目的**: LLM学習の前処理として、テキストデータを機械学習で使用可能な形式に変換・整理する
 
@@ -109,27 +112,27 @@ graph LR
 
 ### やっていること
 
-1. **データの前処理**
+**1. データの前処理**
 - the-verdict.txtから生テキストを読み込み
 - tiktoken（GPT-2トークナイザー）でテキストをトークンIDに変換
 - 数値データとして機械学習で処理可能な形式に変換
 
-2. **スライディングウィンドウによるデータ分割**
+**2. スライディングウィンドウによるデータ分割**
 - 元のテキストを固定長のシーケンス（塊）に分割
 - stride（歩幅）を指定して次のシーケンスとの重複を制御
 - 実例：'I HAD always' → ' HAD always thought' → 'AD always thought Jack'
 
-3. **入力変数と目的変数のペア作成**
+**3. 入力変数と目的変数のペア作成**
 - 入力変数：現在のシーケンス（例：'I HAD always'）
 - 目的変数：1つ先にずらしたシーケンス（例：' HAD always thought'）
 - **注意**: 目的変数は予測結果ではなく、the-verdict.txtから取得した正解データ
 
-4. **PyTorchデータセットクラスの実装**
+**4. PyTorchデータセットクラスの実装**
 - GPTdatasetV1クラスで学習用データを管理
 - PyTorchのDatasetクラスを継承し、標準的なデータ処理を実装
 - バッチ処理とシャッフル機能に対応
 
-5. **データローダーの作成**
+**5. データローダーの作成**
 - 複数のデータをまとめて効率的に処理（バッチ処理）
 - 学習データの順番をランダム化（シャッフル）
 - 並列処理でデータ読み込みを高速化
@@ -209,3 +212,5 @@ flowchart LR
     style E1 fill:#374151,color:#ffffff
     style E2 fill:#374151,color:#ffffff
 ```
+
+</details>
