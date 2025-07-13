@@ -88,15 +88,15 @@ graph LR
     
     A5 --> B1
     
-    style A1 fill:#2d3748,stroke:#4a5568,color:#e2e8f0
-    style A2 fill:#1a202c,stroke:#2d3748,color:#e2e8f0
-    style A3 fill:#2d3748,stroke:#4a5568,color:#e2e8f0
-    style A4 fill:#1a202c,stroke:#2d3748,color:#e2e8f0
-    style A5 fill:#2d3748,stroke:#4a5568,color:#e2e8f0
-    style B1 fill:#1a202c,stroke:#2d3748,color:#e2e8f0
-    style B2 fill:#2d3748,stroke:#4a5568,color:#e2e8f0
-    style B3 fill:#1a202c,stroke:#2d3748,color:#e2e8f0
-    style B4 fill:#2d3748,stroke:#4a5568,color:#e2e8f0
+    style A1 fill:#e1f5fe
+    style A2 fill:#fff3e0
+    style A3 fill:#f3e5f5
+    style A4 fill:#e8f5e8
+    style A5 fill:#fff3e0
+    style B1 fill:#f3e5f5
+    style B2 fill:#e8f5e8
+    style B3 fill:#fff3e0
+    style B4 fill:#f3e5f5
 ```
 
 
