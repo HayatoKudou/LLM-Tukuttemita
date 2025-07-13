@@ -72,6 +72,7 @@ https://github.com/rasbt/LLMs-from-scratch/tree/main/setup/01_optional-python-se
 - 語彙にない単語は自動的に`<|unk|>`に置換される
 
 ```mermaid
+%%{init: {'theme':'dark'}}%%
 graph LR
     subgraph "エンコード処理（実際の値）"
         A1["入力テキスト<br/>Hello, do you like tea? endoftext In the sunlit terraces of the palace."] --> A2["正規表現分割<br/>Hello<br/>カンマ<br/>do<br/>you<br/>like<br/>tea<br/>クエスチョン<br/>endoftext<br/>In<br/>the<br/>sunlit<br/>terraces<br/>of<br/>the<br/>palace<br/>ピリオド"]
@@ -88,15 +89,15 @@ graph LR
     
     A5 --> B1
     
-    style A1 fill:#1e3a8a,color:#ffffff
-    style A2 fill:#166534,color:#ffffff
-    style A3 fill:#7c2d12,color:#ffffff
-    style A4 fill:#581c87,color:#ffffff
-    style A5 fill:#166534,color:#ffffff
-    style B1 fill:#7c2d12,color:#ffffff
-    style B2 fill:#581c87,color:#ffffff
-    style B3 fill:#166534,color:#ffffff
-    style B4 fill:#7c2d12,color:#ffffff
+    style A1 fill:#374151,color:#ffffff
+    style A2 fill:#374151,color:#ffffff
+    style A3 fill:#374151,color:#ffffff
+    style A4 fill:#374151,color:#ffffff
+    style A5 fill:#374151,color:#ffffff
+    style B1 fill:#374151,color:#ffffff
+    style B2 fill:#374151,color:#ffffff
+    style B3 fill:#374151,color:#ffffff
+    style B4 fill:#374151,color:#ffffff
 ```
 
 
@@ -158,6 +159,7 @@ graph LR
 ```
 
 ```mermaid
+%%{init: {'theme':'dark'}}%%
 flowchart LR
  subgraph s1["元のテキスト"]
         A1@{ label: "'I HAD always thought Jack Gisburn rather a cheap genius--though a good fellow e...'" }
@@ -196,14 +198,14 @@ flowchart LR
     D1@{ shape: rect}
     D2@{ shape: rect}
     D3@{ shape: rect}
-    style A1 fill:#1e3a8a,color:#ffffff
-    style B1 fill:#166534,color:#ffffff
-    style C1 fill:#7c2d12,color:#ffffff
-    style C2 fill:#581c87,color:#ffffff
-    style C3 fill:#166534,color:#ffffff
-    style D1 fill:#1e3a8a,color:#ffffff
-    style D2 fill:#7c2d12,color:#ffffff
-    style D3 fill:#581c87,color:#ffffff
-    style E1 fill:#7c2d12,color:#ffffff
-    style E2 fill:#581c87,color:#ffffff
+    style A1 fill:#374151,color:#ffffff
+    style B1 fill:#374151,color:#ffffff
+    style C1 fill:#374151,color:#ffffff
+    style C2 fill:#374151,color:#ffffff
+    style C3 fill:#374151,color:#ffffff
+    style D1 fill:#374151,color:#ffffff
+    style D2 fill:#374151,color:#ffffff
+    style D3 fill:#374151,color:#ffffff
+    style E1 fill:#374151,color:#ffffff
+    style E2 fill:#374151,color:#ffffff
 ```
