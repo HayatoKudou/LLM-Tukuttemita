@@ -72,32 +72,31 @@ https://github.com/rasbt/LLMs-from-scratch/tree/main/setup/01_optional-python-se
 - 語彙にない単語は自動的に`<|unk|>`に置換される
 
 ```mermaid
-graph TD
-    A["元のテキスト<br/>'I HAD always thought Jack Gisburn rather a cheap genius...'"] --> B["正規表現による分割<br/>句読点と空白で分割"]
+graph LR
+    subgraph "エンコード処理（実際の値）"
+        A1["入力テキスト<br/>Hello, do you like tea? endoftext In the sunlit terraces of the palace."] --> A2["正規表現分割<br/>Hello<br/>カンマ<br/>do<br/>you<br/>like<br/>tea<br/>クエスチョン<br/>endoftext<br/>In<br/>the<br/>sunlit<br/>terraces<br/>of<br/>the<br/>palace<br/>ピリオド"]
+        A2 --> A3["語彙チェック（実際の結果）<br/>Hello → 未知トークン<br/>カンマ → 語彙にある<br/>do → 語彙にある<br/>you → 語彙にある<br/>like → 語彙にある<br/>tea → 語彙にある<br/>クエスチョン → 語彙にある<br/>endoftext → 語彙にある<br/>In → 語彙にある<br/>the → 語彙にある<br/>sunlit → 語彙にある<br/>terraces → 語彙にある<br/>of → 語彙にある<br/>the → 語彙にある<br/>palace → 未知トークン<br/>ピリオド → 語彙にある"]
+        A3 --> A4["未知トークン置換<br/>unk<br/>カンマ<br/>do<br/>you<br/>like<br/>tea<br/>クエスチョン<br/>endoftext<br/>In<br/>the<br/>sunlit<br/>terraces<br/>of<br/>the<br/>unk<br/>ピリオド"]
+        A4 --> A5["ID変換（実際の値）<br/>1131<br/>5<br/>355<br/>1126<br/>628<br/>975<br/>10<br/>1130<br/>55<br/>988<br/>956<br/>984<br/>722<br/>988<br/>1131<br/>7"]
+    end
     
-    B --> C["トークンリスト<br/>['I', 'HAD', 'always', 'thought', 'Jack', 'Gisburn', ...]"]
+    subgraph "デコード処理（実際の値）"
+        B1["入力ID<br/>1131, 5, 355, 1126, 628, 975, 10, 1130, 55, 988, 956, 984, 722, 988, 1131, 7"] --> B2["ID→トークン変換<br/>unk<br/>カンマ<br/>do<br/>you<br/>like<br/>tea<br/>クエスチョン<br/>endoftext<br/>In<br/>the<br/>sunlit<br/>terraces<br/>of<br/>the<br/>unk<br/>ピリオド"]
+        B2 --> B3["テキスト結合<br/>unk カンマ do you like tea クエスチョン endoftext In the sunlit terraces of the unk ピリオド"]
+        B3 --> B4["句読点整形<br/>unk, do you like tea? endoftext In the sunlit terraces of the unk."]
+    end
     
-    C --> D["ユニークトークン抽出<br/>重複を除去してアルファベット順にソート<br/>1132個のトークン"]
+    A5 --> B1
     
-    D --> E["特殊トークン追加<br/>endoftext（文書終端）、unk（未知単語）を追加"]
-    
-    E --> F["語彙辞書作成<br/>各トークンに一意のIDを割り当て<br/>感嘆符→0, クォート→1, カンマ→5, ..."]
-    
-    F --> G["SimpleTokenizerV2クラス<br/>エンコード・デコード機能実装"]
-    
-    G --> H1["エンコードテスト<br/>入力: 'Hello, do you like tea?'<br/>結果: [1131, 5, 355, 1126, 628, 975, 10]"]
-    
-    G --> H2["デコードテスト<br/>入力: [1131, 5, 355, 1126, 628, 975, 10]<br/>結果: 'unk, do you like tea?'"]
-    
-    H1 --> I["未知トークン処理<br/>'Hello' → unk<br/>'palace' → unk"]
-    H2 --> I
-    
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style F fill:#f3e5f5
-    style H1 fill:#e8f5e8
-    style H2 fill:#e8f5e8
-    style I fill:#ffebee
+    style A1 fill:#2d3748,stroke:#4a5568,color:#e2e8f0
+    style A2 fill:#1a202c,stroke:#2d3748,color:#e2e8f0
+    style A3 fill:#2d3748,stroke:#4a5568,color:#e2e8f0
+    style A4 fill:#1a202c,stroke:#2d3748,color:#e2e8f0
+    style A5 fill:#2d3748,stroke:#4a5568,color:#e2e8f0
+    style B1 fill:#1a202c,stroke:#2d3748,color:#e2e8f0
+    style B2 fill:#2d3748,stroke:#4a5568,color:#e2e8f0
+    style B3 fill:#1a202c,stroke:#2d3748,color:#e2e8f0
+    style B4 fill:#2d3748,stroke:#4a5568,color:#e2e8f0
 ```
 
 
