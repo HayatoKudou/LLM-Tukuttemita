@@ -5,25 +5,200 @@ https://github.com/rasbt/LLMs-from-scratch/tree/main/setup/01_optional-python-se
 
 ## HandmadeTokenizer.py
 
-LLM用のテキストトークナイザーを自作して、テキストを数値化
+**目的**: LLM用のテキストトークナイザーを自作し、テキストを機械学習で処理可能な数値形式に変換する
+
+**重要**: このファイルは独自のトークナイザーを実装し、テキストの数値化方法を学習するためのもの
 
 ### やっていること
 
-1. 学習元のサンプルテキストをダウンロード
+1. **学習元データの準備**
 - GitHubから短編小説「The Verdict」をダウンロード
 - ローカルファイルとして保存（the-verdict.txt）
+- 実際のテキスト例：'I HAD always thought Jack Gisburn rather a cheap genius...'
 
-2. サンプルテキストをトークン化
+2. **テキストのトークン化**
 - 正規表現を使ってテキストを単語や句読点に分割
-- 不要な空白を除去してトークンのリストを作成
+- 実例：'I HAD always thought Jack Gisburn rather a cheap genius--though a good fellow enough--so it was no g'
+- 結果：['I', 'HAD', 'always', 'thought', 'Jack', 'Gisburn', 'rather', 'a', 'cheap', 'genius', '--', 'though', ...]
 
-3. トークンをトークンIDに変換
+3. **語彙（辞書）の構築**
+- 全てのユニークなトークンを収集・整理（1132個）
+- アルファベット順にソート：['!', '"', "'", '(', ')', ',', '--', '.', ':', ';', ...]
+- 特殊トークンを追加：`<|endoftext|>`（文章の終端）、`<|unk|>`（未知の単語）
+
+4. **トークンIDの割り当て**
 - 各トークンに一意の数値IDを割り当て
-- エンコード機能（テキスト→トークンID）とデコード機能（トークンID→テキスト）を実装
+- 実例：'!' → 0, '"' → 1, "'" → 2, '(' → 3, ')' → 4, ',' → 5, ...
+- 語彙辞書の作成：{トークン: ID}の形式
 
-4. 語彙を作成
-- 全てのユニークなトークンから語彙辞書を構築
-- 特殊トークン（<|endoftext|>、<|unk|>）を追加
+5. **エンコード・デコード機能の実装**
+- **エンコード**: テキスト → トークンID列
+- **デコード**: トークンID列 → テキスト
+- 未知トークンの処理：語彙にない単語は`<|unk|>`に置換
 
-5. 自作トークナイザーの動作確認
-- サンプルテキストでエンコード・デコード処理を実行
+### このファイルの役割
+
+```
+[生テキスト] → [トークン化] → [語彙構築] → [ID割り当て] → [エンコード/デコード機能]
+                                                            ↑
+                                                HandmadeTokenizer.pyの担当範囲
+```
+
+- ✅ 独自トークナイザーの実装
+- ✅ テキストの数値化
+- ✅ 語彙辞書の構築
+- ✅ エンコード・デコード機能
+- ❌ 実際の学習・予測
+- ❌ 高度な自然言語処理
+
+### 実際の処理例
+
+```
+入力テキスト: "Hello, do you like tea?"
+↓ トークン化
+['Hello', ',', 'do', 'you', 'like', 'tea', '?']
+↓ ID変換（'Hello'と'tea'は語彙にない）
+[<|unk|>, 5, 355, 1126, 628, 975, 10]
+↓ エンコード結果
+[1131, 5, 355, 1126, 628, 975, 10]
+↓ デコード結果
+"<|unk|>, do you like tea?"
+```
+
+### 未知トークンの処理
+
+- 'Hello' → `<|unk|>`（未知トークン）
+- 'palace' → `<|unk|>`（未知トークン）
+- 語彙にない単語は自動的に`<|unk|>`に置換される
+
+```mermaid
+graph TD
+    A["元のテキスト<br/>'I HAD always thought Jack Gisburn rather a cheap genius...'"] --> B["正規表現による分割<br/>句読点と空白で分割"]
+    
+    B --> C["トークンリスト<br/>['I', 'HAD', 'always', 'thought', 'Jack', 'Gisburn', ...]"]
+    
+    C --> D["ユニークトークン抽出<br/>重複を除去してアルファベット順にソート<br/>1132個のトークン"]
+    
+    D --> E["特殊トークン追加<br/>endoftext（文書終端）、unk（未知単語）を追加"]
+    
+    E --> F["語彙辞書作成<br/>各トークンに一意のIDを割り当て<br/>感嘆符→0, クォート→1, カンマ→5, ..."]
+    
+    F --> G["SimpleTokenizerV2クラス<br/>エンコード・デコード機能実装"]
+    
+    G --> H1["エンコードテスト<br/>入力: 'Hello, do you like tea?'<br/>結果: [1131, 5, 355, 1126, 628, 975, 10]"]
+    
+    G --> H2["デコードテスト<br/>入力: [1131, 5, 355, 1126, 628, 975, 10]<br/>結果: 'unk, do you like tea?'"]
+    
+    H1 --> I["未知トークン処理<br/>'Hello' → unk<br/>'palace' → unk"]
+    H2 --> I
+    
+    style A fill:#e1f5fe
+    style C fill:#fff3e0
+    style F fill:#f3e5f5
+    style H1 fill:#e8f5e8
+    style H2 fill:#e8f5e8
+    style I fill:#ffebee
+```
+
+
+## BytePairEncorder.py
+
+**目的**: LLM学習の前処理として、テキストデータを機械学習で使用可能な形式に変換・整理する
+
+**重要**: このファイルは実際の学習（予測）は行わず、学習用データの準備のみを行う
+
+### やっていること
+
+1. **データの前処理**
+- the-verdict.txtから生テキストを読み込み
+- tiktoken（GPT-2トークナイザー）でテキストをトークンIDに変換
+- 数値データとして機械学習で処理可能な形式に変換
+
+2. **スライディングウィンドウによるデータ分割**
+- 元のテキストを固定長のシーケンス（塊）に分割
+- stride（歩幅）を指定して次のシーケンスとの重複を制御
+- 実例：'I HAD always' → ' HAD always thought' → 'AD always thought Jack'
+
+3. **入力変数と目的変数のペア作成**
+- 入力変数：現在のシーケンス（例：'I HAD always'）
+- 目的変数：1つ先にずらしたシーケンス（例：' HAD always thought'）
+- **注意**: 目的変数は予測結果ではなく、the-verdict.txtから取得した正解データ
+
+4. **PyTorchデータセットクラスの実装**
+- GPTdatasetV1クラスで学習用データを管理
+- PyTorchのDatasetクラスを継承し、標準的なデータ処理を実装
+- バッチ処理とシャッフル機能に対応
+
+5. **データローダーの作成**
+- 複数のデータをまとめて効率的に処理（バッチ処理）
+- 学習データの順番をランダム化（シャッフル）
+- 並列処理でデータ読み込みを高速化
+
+### このファイルの役割
+
+```
+[生テキスト] → [前処理] → [学習用データ] → [実際の学習（別ファイル）]
+                ↑
+        BytePairEncorder.pyの担当範囲
+```
+
+- ✅ データの準備・整理
+- ✅ 学習用形式への変換
+- ❌ 実際の学習・予測
+- ❌ モデルの訓練
+
+### 実際の処理例
+
+```
+元のテキスト: "I HAD always thought Jack Gisburn rather a cheap genius..."
+↓ トークン化
+[40, 367, 2885, 1464, 1807, 3619, 402, 271, 10899, 2138, ...]
+↓ スライディングウィンドウ（max_length=4）
+入力: [40, 367, 2885, 1464] → 'I HAD always'
+正解: [367, 2885, 1464, 1807] → ' HAD always thought'
+```
+
+```mermaid
+flowchart LR
+ subgraph s1["元のテキスト"]
+        A1@{ label: "'I HAD always thought Jack Gisburn rather a cheap genius--though a good fellow e...'" }
+  end
+ subgraph s2["トークン化"]
+        B1["[40, 367, 2885, 1464, 1807, 3619, 402, 271, 10899, 2138, ...]"]
+  end
+ subgraph subGraph2["スライディングウィンドウ"]
+        C1@{ label: "シーケンス1:<br>[40, 367, 2885, 1464]<br>'I HAD always'" }
+        C2@{ label: "シーケンス2:<br>[367, 2885, 1464, 1807]<br>' HAD always thought'" }
+        C3@{ label: "シーケンス3:<br>[2885, 1464, 1807, 3619]<br>'AD always thought Jack'" }
+  end
+ subgraph s3["入力変数と目的変数のペア"]
+        D1@{ label: "入力: [40, 367, 2885, 1464] → 'I HAD always'<br>目的: [367, 2885, 1464, 1807] → ' HAD always thought'" }
+        D2@{ label: "入力: [367, 2885, 1464, 1807] → ' HAD always thought'<br>目的: [2885, 1464, 1807, 3619] → 'AD always thought Jack'" }
+        D3@{ label: "入力: [2885, 1464, 1807, 3619] → 'AD always thought Jack'<br>目的: [1464, 1807, 3619, 402] → ' always thought Jack G'" }
+  end
+ subgraph subGraph4["バッチ処理 (batch_size=8, stride=4)"]
+        E1["バッチ1:<br>入力: [[40,367,2885,1464], [1807,3619,402,271], ...]<br>目的: [[367,2885,1464,1807], [3619,402,271,10899], ...]"]
+        E2["8個のシーケンスを<br>まとめて処理"]
+  end
+    A1 --> B1
+    B1 --> C1 & C2 & C3
+    C1 --> D1
+    C2 --> D2
+    C3 --> D3
+    D1 --> E1
+    D2 --> E1
+    D3 --> E1
+    E1 --> E2
+
+    A1@{ shape: rect}
+    C1@{ shape: rect}
+    C2@{ shape: rect}
+    C3@{ shape: rect}
+    D1@{ shape: rect}
+    D2@{ shape: rect}
+    D3@{ shape: rect}
+    style A1 fill:#e1f5fe
+    style B1 fill:#fff3e0
+    style E1 fill:#e8f5e8
+    style E2 fill:#e8f5e8
+```
