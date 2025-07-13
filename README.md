@@ -88,15 +88,15 @@ graph LR
     
     A5 --> B1
     
-    style A1 fill:#e1f5fe
-    style A2 fill:#fff3e0
-    style A3 fill:#f3e5f5
-    style A4 fill:#e8f5e8
-    style A5 fill:#fff3e0
-    style B1 fill:#f3e5f5
-    style B2 fill:#e8f5e8
-    style B3 fill:#fff3e0
-    style B4 fill:#f3e5f5
+    style A1 fill:#1e3a8a,color:#ffffff
+    style A2 fill:#166534,color:#ffffff
+    style A3 fill:#7c2d12,color:#ffffff
+    style A4 fill:#581c87,color:#ffffff
+    style A5 fill:#166534,color:#ffffff
+    style B1 fill:#7c2d12,color:#ffffff
+    style B2 fill:#581c87,color:#ffffff
+    style B3 fill:#166534,color:#ffffff
+    style B4 fill:#7c2d12,color:#ffffff
 ```
 
 
@@ -196,8 +196,14 @@ flowchart LR
     D1@{ shape: rect}
     D2@{ shape: rect}
     D3@{ shape: rect}
-    style A1 fill:#e1f5fe
-    style B1 fill:#fff3e0
-    style E1 fill:#e8f5e8
-    style E2 fill:#e8f5e8
+    style A1 fill:#1e3a8a,color:#ffffff
+    style B1 fill:#166534,color:#ffffff
+    style C1 fill:#7c2d12,color:#ffffff
+    style C2 fill:#581c87,color:#ffffff
+    style C3 fill:#166534,color:#ffffff
+    style D1 fill:#1e3a8a,color:#ffffff
+    style D2 fill:#7c2d12,color:#ffffff
+    style D3 fill:#581c87,color:#ffffff
+    style E1 fill:#7c2d12,color:#ffffff
+    style E2 fill:#581c87,color:#ffffff
 ```
