@@ -65,5 +65,5 @@ dataloader = create_dataloader(
 # データローダーをPythonのイテレータに変換し、Pythonの組み込み関数next()で次のエントリを取得
 data_iter = iter(dataloader)
 inputs, targets = next(data_iter)
-print("Inputs: \n", inputs)
-print("\nTargets: \n", targets)
+print("Token IDs: \n", inputs)
+print("\Inputs shape: \n", inputs.shape)
