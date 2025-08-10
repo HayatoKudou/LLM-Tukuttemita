@@ -24,6 +24,19 @@ for i, x_i in enumerate(inputs):
 # 正規化の主な目的は、Attentionの重みの総和が1になるようにして、、確率的な解釈ができるように
 attn_weights_2_tmp = attn_scores_2 / attn_scores_2.sum()
 
+# 実際には、より数値的に安定した方法で正規化する
+# 性能面で広く最適化されているPyTorchのソフトマックス
+attn_weights_2 = torch.softmax(attn_scores_2, dim=0)
+
+# コンテキストベクトル = 各入力ベクトルに対応する注意重みを掛けて足し合わせた加重和
+context_vec_2 = torch.zeros(query.shape)
+for i,x_i in enumerate(inputs):
+    context_vec_2 += attn_weights_2[i]*x_i
+print(context_vec_2)
+
+
+# ↓ より洗練した実装
+
 # forループは遅いので、効率的にすべてのクエリに対して一度にスコアを計算
 attn_scores = inputs @ inputs.T
 
