@@ -197,3 +197,11 @@ flowchart LR
 - **PyTorchとの統合**: 標準的な深層学習フレームワークに対応
 
 </details>
+
+
+<details>
+<summary>self-attention.py</summary>
+
+このSled-Attentionでの目標は入力シーケンスの各要素に対してコンテキストベクトルを計算すること
+
+</details>
