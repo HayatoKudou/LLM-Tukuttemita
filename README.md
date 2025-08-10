@@ -202,6 +202,45 @@ flowchart LR
 <details>
 <summary>self-attention.py</summary>
 
-このSled-Attentionでの目標は入力シーケンスの各要素に対してコンテキストベクトルを計算すること
+### 概要
+自己注意(Self-Attention)の最小実装デモ。各トークン埋め込み同士の内積で「似ている度=注意スコア」を計算し、`softmax` で正規化した重みを用いて加重平均(コンテキストベクトル)を求める
+
+### 処理内容
+1. 入力ベクトルの用意: 各トークンをベクトルで表す（小さなおもちゃデータ）
+2. クエリ選択: 例では2番目のトークンを「基準（クエリ）」にする
+3. 似ている度を計算: クエリと各トークンがどれだけ近いかを数値で表す
+4. 重みに変換: その数値を「合計が1になる重み」に整える（確率のように解釈）
+5. コンテキスト計算: 重みで各ベクトルをまぜて、クエリ用の「文脈ベクトル」を作る
+6. 全トークン版: 同じ処理をすべてのトークンについてまとめて計算して速くする
+
+
+### 2つ目の入力要素をクエリとした場合のAttentionの重み
+![Computing attention for all input tokens](image/computing-attention-all-input-token.png)
+
+### 重要なコード断片
+
+内積で注意スコア（未正規化）を計算:
+```16:35:self-attention.py
+attn_scores_2 = torch.empty(inputs.shape[0])
+for i, x_i in enumerate(inputs):
+    attn_scores_2[i] = torch.dot(x_i, query)
+```
+
+`softmax` で重みに変換し、加重平均でコンテキストを作る:
+```52:65:self-attention.py
+attn_weights_2 = torch.softmax(attn_scores_2, dim=0)
+context_vec_2 = torch.zeros(query.shape)
+for i, x_i in enumerate(inputs):
+    context_vec_2 += attn_weights_2[i] * x_i
+print(context_vec_2)
+```
+
+全トークン分を行列演算で一括実行:
+```67:79:self-attention.py
+attn_scores = inputs @ inputs.T
+attn_weights = torch.softmax(attn_scores, dim=-1)
+all_context_vecs = attn_weights @ inputs
+print(all_context_vecs)
+```
 
 </details>
