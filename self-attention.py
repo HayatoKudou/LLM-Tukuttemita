@@ -1,4 +1,6 @@
 import torch
+# 目的: 自己注意で「どのトークンにどれだけ注目するか」を学習できるよう、
+# 各トークンを Q/K/V に写像する土台を作る最小例
 
 # 入力: 各行が1トークンの埋め込みベクトル
 inputs = torch.tensor(
@@ -10,39 +12,27 @@ inputs = torch.tensor(
    [0.05, 0.80, 0.55]] # step     (x^6)
 )
 
-# クエリ: 2つ目の入力トークン「journey」をクエリとして使う
-query = inputs[1]
+# 目的: 2番目のトークンをクエリとして使い、関連度計算の基点にする
+x_2 = inputs[1]
+d_in = inputs.shape[1] # 入力埋め込みのサイズ
+d_out = 2 # 出力埋め込みのサイズ
 
-# Attentionスコアの計算
-# クエリと他の入力トークンの間でドット積を計算することで決定
-attn_scores_2 = torch.empty(inputs.shape[0])
-for i, x_i in enumerate(inputs):
-    # 内積: x^i・query → Attentionスコアとして解釈
-    attn_scores_2[i] = torch.dot(x_i, query)
+torch.manual_seed(123)  # 目的: 実験の再現性（結果比較・検証のため）
+# 目的: Q/K/V を別役割で表現できるようにする写像
+#  - Q: 何に注目するか（問い合わせの視点）
+#  - K: どれだけ注目されるか（鍵/一致度の指標）
+#  - V: 渡す情報そのもの
+#   ※ 本来は学習するが、ここでは固定して挙動を確認
+W_query = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
+W_key   = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
+W_value = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
 
-# Attentionスコアを正規化
-# 正規化の主な目的は、Attentionの重みの総和が1になるようにして、、確率的な解釈ができるように
-attn_weights_2_tmp = attn_scores_2 / attn_scores_2.sum()
+query_2 = x_2 @ W_query  # 目的: このトークンが「何に注目するか」を表す
+key_2 = x_2 @ W_key      # 目的: このトークンが「どれだけ注目されるか」の指標
+value_2 = x_2 @ W_value  # 目的: このトークンが「相手へ渡す情報」
 
-# 実際には、より数値的に安定した方法で正規化する
-# 性能面で広く最適化されているPyTorchのソフトマックス
-attn_weights_2 = torch.softmax(attn_scores_2, dim=0)
+keys = inputs @ W_key 
+values = inputs @ W_value
 
-# コンテキストベクトル = 各入力ベクトルに対応する注意重みを掛けて足し合わせた加重和
-context_vec_2 = torch.zeros(query.shape)
-for i,x_i in enumerate(inputs):
-    context_vec_2 += attn_weights_2[i]*x_i
-print(context_vec_2)
-
-
-# ↓ より洗練した実装
-
-# forループは遅いので、効率的にすべてのクエリに対して一度にスコアを計算
-attn_scores = inputs @ inputs.T
-
-# 各行を正規化
-attn_weights = torch.softmax(attn_scores, dim=-1)
-
-# これらAttentionの重みと行列積を使って、すべてのクエリのコンテキストベクトルを計算
-all_context_vecs = attn_weights @ inputs
-print(all_context_vecs)
+print("keys.shape:", keys.shape)
+print("values.shape:", values.shape)
